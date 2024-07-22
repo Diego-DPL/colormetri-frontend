@@ -1,21 +1,44 @@
 import React, { useState } from 'react';
 import { Button, IconButton, OutlinedInput, InputAdornment, FormControl, InputLabel } from "@mui/material";
 import { PhotoCamera } from '@mui/icons-material';
+import axios from 'axios';
 
 function Home() {
     const [fileName, setFileName] = useState<string>('');
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+    const [file, setFile] = useState<File | null>(null);
+    const [colors, setColors] = useState<string[]>([]);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
             const file = event.target.files[0];
             setFileName(file.name);
+            setFile(file);
 
             const reader = new FileReader();
             reader.onloadend = () => {
                 setImagePreviewUrl(reader.result as string);
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const handleExtractColors = async () => {
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await axios.post('https://colormetri-backend.herokuapp.com/upload-image/', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            setColors(response.data.colors);
+        } catch (error) {
+            console.error('Error extracting colors:', error);
         }
     };
 
@@ -81,11 +104,25 @@ function Home() {
                         variant="contained"
                         size="large"
                         style={{ backgroundColor: '#FF6F61' }}
+                        onClick={handleExtractColors}
                     >
                         Extraer Paleta
                     </Button>
                 </section>
             </section>
+            {colors.length > 0 && (
+                <div className="mt-8">
+                    <h2 className="text-xl font-bold mb-4">Paleta de Colores</h2>
+                    <div className="flex flex-wrap">
+                        {colors.map((color, index) => (
+                            <div key={index} className="flex flex-col items-center m-2">
+                                <div className="w-16 h-16" style={{ backgroundColor: color, margin: '4px' }}></div>
+                                <p className="text-sm mt-2">{color}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
