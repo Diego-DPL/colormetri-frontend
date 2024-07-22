@@ -30,7 +30,7 @@ function Home() {
         formData.append('file', file);
 
         try {
-            const response = await axios.post('https://colormetri-backend.herokuapp.com/upload-image/', formData, {
+            const response = await axios.post('https://colormetri-backend-3154dcafc3f1.herokuapp.com/upload-image/', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
