@@ -4,10 +4,18 @@ import { PhotoCamera } from '@mui/icons-material';
 
 function Home() {
     const [fileName, setFileName] = useState<string>('');
+    const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
-            setFileName(event.target.files[0].name);
+            const file = event.target.files[0];
+            setFileName(file.name);
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreviewUrl(reader.result as string);
+            };
+            reader.readAsDataURL(file);
         }
     };
 
@@ -18,7 +26,7 @@ function Home() {
         "& .MuiOutlinedInput-root": {
             "& fieldset": {
                 borderColor: "#4A4A4A",
-                borderRadius: "100px",
+                borderRadius: "10px",
                 borderWidth: "2px",
             },
             "&:hover fieldset": {
@@ -36,6 +44,11 @@ function Home() {
     return (
         <div className="h-screen flex flex-col items-center justify-center p-4 bg-background">
             <h1 className='text-primary text-8xl font-bold text-center mb-8'>Colormetri</h1>
+            {imagePreviewUrl && (
+                <div className="mb-8 flex justify-center">
+                    <img src={imagePreviewUrl} alt="Preview" className="w-80 h-auto rounded-lg shadow-md" />
+                </div>
+            )}
             <section className='flex flex-col items-center justify-center w-full max-w-md'>
                 <FormControl fullWidth margin="normal" sx={textFieldStyles}>
                     <InputLabel htmlFor="outlined-adornment-file-input">Adjuntar imagen</InputLabel>
@@ -72,7 +85,6 @@ function Home() {
                         Extraer Paleta
                     </Button>
                 </section>
-
             </section>
         </div>
     );
