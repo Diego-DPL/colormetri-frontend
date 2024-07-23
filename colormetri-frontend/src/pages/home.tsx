@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, IconButton, OutlinedInput, InputAdornment, FormControl, InputLabel } from "@mui/material";
+import { Button, IconButton, OutlinedInput, InputAdornment, FormControl, InputLabel, CircularProgress } from "@mui/material";
 import { PhotoCamera } from '@mui/icons-material';
 import axios from 'axios';
 
@@ -8,6 +8,7 @@ function Home() {
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
     const [colors, setColors] = useState<string[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
@@ -28,6 +29,7 @@ function Home() {
 
         const formData = new FormData();
         formData.append('file', file);
+        setLoading(true);
 
         try {
             const response = await axios.post('https://colormetri-backend-3154dcafc3f1.herokuapp.com/upload-image/', formData, {
@@ -39,6 +41,8 @@ function Home() {
             setColors(response.data.colors);
         } catch (error) {
             console.error('Error extracting colors:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -107,8 +111,9 @@ function Home() {
                         size="large"
                         style={{ backgroundColor: '#FF6F61' }}
                         onClick={handleExtractColors}
+                        disabled={loading}
                     >
-                        Extraer Paleta
+                        {loading ? <CircularProgress size={24} color="inherit" /> : 'Extraer Paleta'}
                     </Button>
                 </section>
             </section>
