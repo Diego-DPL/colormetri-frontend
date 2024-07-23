@@ -66,7 +66,9 @@ function Home() {
 
     return (
         <div className="h-screen flex flex-col items-center justify-center p-4 bg-background">
-            <h1 className='text-primary text-8xl font-bold text-center mb-8'>Colormetri</h1>
+            <h1 className='text-primary text-6xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-center mb-8'>
+                Colormetri
+            </h1>
             {imagePreviewUrl && (
                 <div className="mb-8 flex justify-center">
                     <img src={imagePreviewUrl} alt="Preview" className="w-80 h-auto rounded-lg shadow-md" />
